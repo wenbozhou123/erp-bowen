@@ -1,4 +1,6 @@
-### 数据库
+### 数据库  
+[参考链接](https://www.jianshu.com/p/68be095f983c) 
+
     1. 安装Postgresql (ubuntu) 
         执行如下命令安装postgresql
         sudo apt-get install postgresql
@@ -34,6 +36,9 @@
         - 登录数据库
         psql -U corey -d corey -h 127.0.0.1 -p 5432
         密码: admin_1234
+
+-----------------------------------
+
 
 
 
