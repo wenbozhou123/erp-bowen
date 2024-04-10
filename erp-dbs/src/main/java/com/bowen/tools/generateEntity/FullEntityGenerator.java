@@ -1,9 +1,5 @@
-package com.bowen.tools;
+package com.bowen.tools.generateEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;

@@ -1,4 +1,4 @@
-package com.bowen.tools;
+package com.bowen.tools.generateEntity;
 
 public enum GenerateTypeEnum {
 
