@@ -1,5 +1,8 @@
 package com.bowen.tools;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 生成java 实体类的 入参类
  * */
@@ -19,11 +22,16 @@ public class GenerateEntityProperties {
     /**
      * 需要身成的表名
      * */
-    private String tableName = "product_info";
+    private List<String> tableNames = new ArrayList<>(){{
+        add("product_info");
+    }};
     /**
      * 生成java类保存路径
      * */
-    private String savePath = "/home/zhoubowen/myProjects/erp-plus/base-info/src/main/java/com/bowen/baseinfo/archiveMana/productsArchive";
+    private List<String> savePaths = new ArrayList<>(){{
+        add("/home/zhoubowen/myProjects/erp-plus/base-info/src/main/java/com/bowen/baseinfo/archiveMana/productsArchive");
+    }};
+
 
     /**
      * 注解类型，
@@ -32,6 +40,7 @@ public class GenerateEntityProperties {
      * MY_BATIS_PLUS        mybatis-plus实现
      * */
     private String annotationType = GenerateTypeEnum.JPA.name();
+
 
     public String getUrl() {
         return url;
@@ -57,20 +66,20 @@ public class GenerateEntityProperties {
         this.password = password;
     }
 
-    public String getTableName() {
-        return tableName;
+    public List<String> getTableNames() {
+        return tableNames;
     }
 
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
+    public void setTableNames(List<String> tableNames) {
+        this.tableNames = tableNames;
     }
 
-    public String getSavePath() {
-        return savePath;
+    public List<String> getSavePaths() {
+        return savePaths;
     }
 
-    public void setSavePath(String savePath) {
-        this.savePath = savePath;
+    public void setSavePaths(List<String> savePaths) {
+        this.savePaths = savePaths;
     }
 
     public String getAnnotationType() {

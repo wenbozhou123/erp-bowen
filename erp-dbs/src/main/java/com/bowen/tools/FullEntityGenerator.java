@@ -22,94 +22,100 @@ public class FullEntityGenerator {
     public static void main(String[] args) throws Exception {
         GenerateEntityProperties properties = new GenerateEntityProperties();
         properties.setAnnotationType(GenerateTypeEnum.SPRING_DATA_JPA.name());
-        generateJavaEntity(properties);
+        generateJavaEntityByTableNames(properties);
     }
 
-    public static void generateJavaEntity(GenerateEntityProperties properties) throws SQLException {
+    public static void generateJavaEntityByTableNames(GenerateEntityProperties properties) throws SQLException {
         String url = properties.getUrl();
         String user = properties.getUser();
         String password = properties.getPassword();
-        String tableName = properties.getTableName();
-        String savePath = properties.getSavePath();
+        List<String> tableNames = properties.getTableNames();
+        List<String> savePaths = properties.getSavePaths();
         String annotationType = properties.getAnnotationType();
 
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
             DatabaseMetaData metaData = connection.getMetaData();
-            ResultSet columns = metaData.getColumns(null, null, tableName, null);
-
-            StringBuilder classContent = new StringBuilder();
-            List<String> methodContents = new ArrayList<>();
-            List<String> packageAndImportContents = new ArrayList<>();
-            packageAndImportContents.add("import java.io.Serializable;\n");
-
-            //增加@Table等注解
-            packageAndImportContents.addAll(GenerateEntityConstant.annotation2ImportContent.get(annotationType));
-
-            String packagePath = savePath
-                    .replaceAll("\\\\", ".")
-                    .replaceAll("/", ".")
-                    .replaceAll("^.*src(\\.main\\.java\\.)?", "")
-                    + ";";
-
-            String className = convertToCamelCase(tableName, true) + "Entity";
-
-            //增加类注释
-            classContent.append("/**\n" +
-                    " * @Description  \n" +
-                    " * @Author  ZhouBowen\n" +
-                    " * @Date "+ new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " \n" +
-                    " */\n");
-
-            //生成类头和注解
-            classContent.append(generateClassHeadAndAnnotation(tableName,className,annotationType));
-
-            while (columns.next()) {
-                String columnName = columns.getString("COLUMN_NAME");
-                String columnType = columns.getString("TYPE_NAME");
-                String remarks = columns.getString("REMARKS");
-                String fieldName = convertToCamelCase(columnName, false);
-                String fieldType = sqlTypeToJavaTypeForPostgres(columnType);
-
-                //增加字段注释
-                classContent.append("\t/**\n");
-                classContent.append("\t * "+ remarks + "\n");
-                classContent.append("\t */\n");
-                // 生成字段
-                classContent.append(generateClassFieldAndAnnotation(columns, columnName, fieldType, fieldName, annotationType));
-
-                // Generate getter
-                methodContents.add(generateGetter(fieldName, fieldType));
-
-                // Generate setter
-                methodContents.add(generateSetter(fieldName, fieldType));
-
-                //Generate import
-                String importContent = generateImport(fieldType);
-                if (importContent != null) {
-                    packageAndImportContents.add(importContent);
-                }
-
+            for(int i = 0; i < tableNames.size(); i++) {
+                generateJavaEntityByTableName(metaData, tableNames.get(i), annotationType, savePaths.get(i));
             }
-
-            if (!packageAndImportContents.isEmpty()) {
-                packageAndImportContents.add(0, "\n");
-            }
-
-            //Generate package and  import content
-            packageAndImportContents.add( "\n");
-            packageAndImportContents.add("package " + packagePath+ "\n");
-
-            BiFunction<Integer, String, StringBuilder> StringBufferInsertMethodReference = classContent::insert;
-            packageAndImportContents.forEach(e -> StringBufferInsertMethodReference.apply(0, e));
-
-            // Append methods to class content
-            methodContents.forEach(classContent::append);
-
-            classContent.append("}\n");
-
-            //System.out.println(classContent);
-            generateJavaFile(classContent.toString(), savePath+"/"+className +".java");
         }
+    }
+
+    private static void generateJavaEntityByTableName(DatabaseMetaData metaData, String tableName, String annotationType, String savePath) throws SQLException {
+        ResultSet columns = metaData.getColumns(null, null, tableName, null);
+
+        StringBuilder classContent = new StringBuilder();
+        List<String> methodContents = new ArrayList<>();
+        List<String> packageAndImportContents = new ArrayList<>();
+        packageAndImportContents.add("import java.io.Serializable;\n");
+
+        //增加@Table等注解
+        packageAndImportContents.addAll(GenerateEntityConstant.annotation2ImportContent.get(annotationType));
+
+        String packagePath = savePath
+                .replaceAll("\\\\", ".")
+                .replaceAll("/", ".")
+                .replaceAll("^.*src(\\.main\\.java\\.)?", "")
+                + ";";
+
+        String className = convertToCamelCase(tableName, true) + "Entity";
+
+        //增加类注释
+        classContent.append("/**\n" +
+                " * @Description  \n" +
+                " * @Author  ZhouBowen\n" +
+                " * @Date "+ new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " \n" +
+                " */\n");
+
+        //生成类头和注解
+        classContent.append(generateClassHeadAndAnnotation(tableName,className, annotationType));
+
+        while (columns.next()) {
+            String columnName = columns.getString("COLUMN_NAME");
+            String columnType = columns.getString("TYPE_NAME");
+            String remarks = columns.getString("REMARKS");
+            String fieldName = convertToCamelCase(columnName, false);
+            String fieldType = sqlTypeToJavaTypeForPostgres(columnType);
+
+            //增加字段注释
+            classContent.append("\t/**\n");
+            classContent.append("\t * "+ remarks + "\n");
+            classContent.append("\t */\n");
+            // 生成字段
+            classContent.append(generateClassFieldAndAnnotation(columns, columnName, fieldType, fieldName, annotationType));
+
+            // Generate getter
+            methodContents.add(generateGetter(fieldName, fieldType));
+
+            // Generate setter
+            methodContents.add(generateSetter(fieldName, fieldType));
+
+            //Generate import
+            String importContent = generateImport(fieldType);
+            if (importContent != null) {
+                packageAndImportContents.add(importContent);
+            }
+
+        }
+
+        if (!packageAndImportContents.isEmpty()) {
+            packageAndImportContents.add(0, "\n");
+        }
+
+        //Generate package and  import content
+        packageAndImportContents.add( "\n");
+        packageAndImportContents.add("package " + packagePath+ "\n");
+
+        BiFunction<Integer, String, StringBuilder> StringBufferInsertMethodReference = classContent::insert;
+        packageAndImportContents.forEach(e -> StringBufferInsertMethodReference.apply(0, e));
+
+        // Append methods to class content
+        methodContents.forEach(classContent::append);
+
+        classContent.append("}\n");
+
+        //System.out.println(classContent);
+        generateJavaFile(classContent.toString(), savePath +"/"+className +".java");
     }
 
     //生成类头和注解

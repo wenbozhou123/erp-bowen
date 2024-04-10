@@ -11,12 +11,12 @@ import java.io.Serializable;
 /**
  * @Description  
  * @Author  ZhouBowen
- * @Date 2024-04-10 18:36:25 
+ * @Date 2024-04-10 19:08:19 
  */
 @Entity
 @Table(name="product_info")
 public class ProductInfoEntity implements Serializable  {
-	private static final long serialVersionUID =  988620456892270727L;
+	private static final long serialVersionUID =  4583296144679541884L;
 
 	/**
 	 * 商品ID
