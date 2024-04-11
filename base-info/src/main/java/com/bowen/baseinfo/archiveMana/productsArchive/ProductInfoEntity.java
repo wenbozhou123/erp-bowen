@@ -1,7 +1,6 @@
 package com.bowen.baseinfo.archiveMana.productsArchive;
 
 import java.time.LocalDateTime;
-import java.time.LocalDateTime;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
 import jakarta.persistence.Entity;
@@ -11,12 +10,12 @@ import java.io.Serializable;
 /**
  * @Description  
  * @Author  ZhouBowen
- * @Date 2024-04-10 19:08:19 
+ * @Date 2024-04-11 09:24:12 
  */
 @Entity
 @Table(name="product_info")
 public class ProductInfoEntity implements Serializable  {
-	private static final long serialVersionUID =  4583296144679541884L;
+	private static final long serialVersionUID =  8616684686296621447L;
 
 	/**
 	 * 商品ID

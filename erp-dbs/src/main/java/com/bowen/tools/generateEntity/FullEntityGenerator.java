@@ -88,7 +88,7 @@ public class FullEntityGenerator {
 
             //Generate import
             String importContent = generateImport(fieldType);
-            if (importContent != null) {
+            if (importContent != null && !packageAndImportContents.contains(importContent)) {
                 packageAndImportContents.add(importContent);
             }
 
