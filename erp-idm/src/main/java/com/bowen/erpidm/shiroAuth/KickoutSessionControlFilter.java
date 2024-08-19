@@ -148,9 +148,9 @@ public class KickoutSessionControlFilter extends AccessControlFilter {
             writer.write("请先登陆");
             writer.close();
 
-
+            return false;
         }
 
-        return false;
+        return true;
     }
 }
