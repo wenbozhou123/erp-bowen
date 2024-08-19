@@ -12,15 +12,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-//@SpringBootApplication
+@SpringBootApplication
 public class ErpIdmApplication {
 
     public static void main(String[] args) {
-        //SpringApplication.run(ErpIdmApplication.class, args);
-        //list.add(null);
+        SpringApplication.run(ErpIdmApplication.class, args);
+        /*list.add(null);
         String kk = "1";
         int res = Integer.parseInt(kk);
-        //time1();
+        time1();*/
     }
 
     public static void time1() {

@@ -1,11 +1,9 @@
 package com.bowen.erpidm.shiroAuth;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.AuthenticationInfo;
-import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.lang.util.ByteSource;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 
@@ -28,7 +26,14 @@ public class MyShiroRealm extends AuthorizingRealm {
         String password = new String(token.getPassword());
 
 
-
-        return null;
+        //实际项目中，这里可以根据实际情况做缓存，如果不做，Shiro自己也有时间间隔机制，2分钟不会重复执行该方法
+        //用户密码的比对是Shiro帮我们完成的
+        SimpleAuthenticationInfo sai = new SimpleAuthenticationInfo(
+                username,    // user account
+                password,   //密码
+                ByteSource.Util.bytes("salt"),   //salt
+                "MyShiroRealm"
+        );
+        return sai;
     }
 }

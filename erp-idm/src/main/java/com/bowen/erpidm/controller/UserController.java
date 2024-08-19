@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController("/user")
 public class UserController {
-
     @PostMapping("/shiroLogin")
     public String shiroLogin(String username, String password) {
         Subject subject = SecurityUtils.getSubject();
         UsernamePasswordToken token = new UsernamePasswordToken(username, password);
         subject.login(token);
-        return null;
+        String sessionId = subject.getSession().getId().toString();
+        return sessionId;
     }
 
     @PostMapping("/shiroLogout")

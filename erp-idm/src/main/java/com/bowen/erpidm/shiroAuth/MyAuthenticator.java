@@ -36,6 +36,7 @@ public class MyAuthenticator extends FormAuthenticationFilter {
         res.setStatus(HttpServletResponse.SC_OK);
         PrintWriter writer = res.getWriter();
         writer.write("请先登陆");
+        writer.close();
         // return  false 拦截, true 放行
         return false;
     }

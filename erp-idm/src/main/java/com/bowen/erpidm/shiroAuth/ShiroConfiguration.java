@@ -26,8 +26,8 @@ import java.util.Map;
 @Configuration
 public class ShiroConfiguration {
 
-    @Autowired
-    private DataSource dataSource;
+    /*@Autowired
+    private DataSource dataSource;*/
 
     @Value("300")
     private long expire = 30 * 24 * 60 * 60;   //30天
@@ -60,19 +60,28 @@ public class ShiroConfiguration {
         //自定义的过滤器实现
         Map<String, Filter> filterMap = new LinkedHashMap<>();
         filterMap.put("myAuthenticator", new MyAuthenticator()); // 自定义的过滤器
-        filterMap.put("kickout", null);  // 限制同一账号同时在线的个数
+        filterMap.put("kickout", kickoutSessionControlFilter());  // 限制同一账号同时在线的个数
 
         filterFactoryBean.setFilters(filterMap);
         filterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
         return filterFactoryBean;
     }
 
+    @Bean
+    public KickoutSessionControlFilter kickoutSessionControlFilter(){
+        KickoutSessionControlFilter kickoutSessionControlFilter = new KickoutSessionControlFilter();
+
+
+
+        return kickoutSessionControlFilter;
+    }
+
     @Bean("securityManagerJdbc")
-    public SecurityManager securityManager(JdbcRealm jdbcRealm) {
+    public SecurityManager securityManagerJdbc(JdbcRealm jdbcRealm) {
         return new DefaultWebSecurityManager(jdbcRealm);
     }
 
-    //todo 确实会话管理和缓存管理
+    //todo 待实现会话管理和缓存管理
     @Bean("securityManagerMyRealm")
     public SecurityManager securityManager(MyShiroRealm myShiroRealm) {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
@@ -105,7 +114,7 @@ public class ShiroConfiguration {
         jdbcRealm.setUserRolesQuery(userRolesQuery);
         jdbcRealm.setPermissionsQuery(permissionsQuery);
         //设置数据源
-        jdbcRealm.setDataSource(dataSource);
+        //jdbcRealm.setDataSource(dataSource);
         return jdbcRealm;
     }
 
