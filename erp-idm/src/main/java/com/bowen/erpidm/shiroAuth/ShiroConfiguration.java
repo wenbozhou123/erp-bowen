@@ -10,12 +10,14 @@ import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSource
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
@@ -54,10 +56,10 @@ public class ShiroConfiguration {
         filterChainDefinitionMap.put("/logout", "anon");
 
         //表示 访问/** 首先要通过authc和myAuthenticator过滤器
-        filterChainDefinitionMap.put("/**", "logout,myAuthenticator,kickout");
+        filterChainDefinitionMap.put("/**", "authc,myAuthenticator,kickout");
         //自定义的过滤器实现
         Map<String, Filter> filterMap = new LinkedHashMap<>();
-        filterMap.put("myAuthenticator", null); // 自定义的过滤器
+        filterMap.put("myAuthenticator", new MyAuthenticator()); // 自定义的过滤器
         filterMap.put("kickout", null);  // 限制同一账号同时在线的个数
 
         filterFactoryBean.setFilters(filterMap);
@@ -70,6 +72,7 @@ public class ShiroConfiguration {
         return new DefaultWebSecurityManager(jdbcRealm);
     }
 
+    //todo 确实会话管理和缓存管理
     @Bean("securityManagerMyRealm")
     public SecurityManager securityManager(MyShiroRealm myShiroRealm) {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
@@ -77,6 +80,13 @@ public class ShiroConfiguration {
         // securityManager.setSessionManager(null);
         // securityManager.setCacheManager(null);
         return securityManager;
+    }
+
+
+    @Bean("sessionManager")
+    @DependsOn("lifecycleBeanPostProcessor")
+    public DefaultWebSessionManager sessionManager(){
+        return null;
     }
 
 
@@ -110,10 +120,14 @@ public class ShiroConfiguration {
         return myShiroRealm;
     }
 
+    /**
+     * HashedCredentialsMatcher 对密码进行编码
+     * 防止密码在数据库明文保存，当然在登陆时候，也是这个类对form李输入的密码进行编码
+     * */
     @Bean("hashCredentialsMatcher")
     public CredentialsMatcher hashCredentialsMatcher() {
         HashedCredentialsMatcher hashedCredentialsMatcher = new HashedCredentialsMatcher();
-        hashedCredentialsMatcher.setHashAlgorithmName("md5");   //散列算法 为md5
+        hashedCredentialsMatcher.setHashAlgorithmName("MD5");   //散列算法 为md5
         hashedCredentialsMatcher.setHashIterations(2);  //散列次数
         hashedCredentialsMatcher.setStoredCredentialsHexEncoded(true);  //true 代表Hex存储，否则Base64-encode存储
         return hashedCredentialsMatcher;
