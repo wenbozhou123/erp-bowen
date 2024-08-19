@@ -52,16 +52,18 @@ public class ShiroConfiguration {
             perms["行为"] 只有拥有某种行为的才能访问， 例如 /admin/deluser = perms["admin:delete"]
         */
         Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
-        filterChainDefinitionMap.put("/login", "anon");
-        filterChainDefinitionMap.put("/logout", "anon");
+        filterChainDefinitionMap.put("/user/shiroLogin", "anon");
+        filterChainDefinitionMap.put("/user/shiroLogout", "anon");
 
         //表示 访问/** 首先要通过authc和myAuthenticator过滤器
-        filterChainDefinitionMap.put("/**", "authc,myAuthenticator,kickout");
+        filterChainDefinitionMap.put("/**", "myAuthenticator,kickout");
         //自定义的过滤器实现
         Map<String, Filter> filterMap = new LinkedHashMap<>();
         filterMap.put("myAuthenticator", new MyAuthenticator()); // 自定义的过滤器
         filterMap.put("kickout", kickoutSessionControlFilter());  // 限制同一账号同时在线的个数
 
+
+        filterFactoryBean.setLoginUrl("/user/shiroLogin");
         filterFactoryBean.setFilters(filterMap);
         filterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
         return filterFactoryBean;
