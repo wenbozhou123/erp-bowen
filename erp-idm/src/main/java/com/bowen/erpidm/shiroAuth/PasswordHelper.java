@@ -19,7 +19,7 @@ public class PasswordHelper {
     /**
      * 指定散列次数为1024次，即加密1024次
      */
-    private static final int hashIterations = 1024;
+    private static final int hashIterations = 2;
 
     /**
      * true指定Hash散列值使用Hex加密存. false表明hash散列值用用Base64-encoded存储

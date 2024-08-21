@@ -125,7 +125,8 @@ public class ShiroConfiguration {
      * 负责用户的认证和权限处理，可以参考JdbcRealm实现
      * */
     @Bean("myShiroRealm")
-    public MyShiroRealm myShiroRealm(CredentialsMatcher hashCredentialsMatcher) {
+    @DependsOn("lifecycleBeanPostProcessor")
+    public MyShiroRealm myShiroRealm(@Qualifier("hashCredentialsMatcher") CredentialsMatcher hashCredentialsMatcher) {
         MyShiroRealm myShiroRealm = new MyShiroRealm();
         myShiroRealm.setCredentialsMatcher(hashCredentialsMatcher);
         return myShiroRealm;

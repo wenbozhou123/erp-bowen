@@ -12,6 +12,10 @@ import org.apache.shiro.subject.PrincipalCollection;
  * */
 @Slf4j
 public class MyShiroRealm extends AuthorizingRealm {
+    public MyShiroRealm(){
+        super();
+        super.setName("myShiroRealm");
+    }
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
@@ -25,14 +29,17 @@ public class MyShiroRealm extends AuthorizingRealm {
         String username = token.getUsername();
         String password = new String(token.getPassword());
 
+        String salt = PasswordHelper.createSalt();
+        String enPwd = PasswordHelper.createCredentials(password, salt);
+
 
         //实际项目中，这里可以根据实际情况做缓存，如果不做，Shiro自己也有时间间隔机制，2分钟不会重复执行该方法
         //用户密码的比对是Shiro帮我们完成的
         SimpleAuthenticationInfo sai = new SimpleAuthenticationInfo(
                 username,    // user account
-                password,   //密码
-                ByteSource.Util.bytes("salt"),   //salt
-                "MyShiroRealm"
+                enPwd,   //密码
+                ByteSource.Util.bytes(salt),   //salt
+                "myShiroRealm"
         );
         return sai;
     }
