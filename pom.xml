@@ -8,6 +8,10 @@
 		<version>3.2.4</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
+	<modules>
+		<module>erp-dbs</module>
+		<module>erp-idm</module>
+	</modules>
 	<groupId>com.bowen</groupId>
 	<artifactId>erp-plus</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -40,5 +44,6 @@
 
 		</plugins>
 	</build>
+
 
 </project>
